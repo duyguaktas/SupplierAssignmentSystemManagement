@@ -1,0 +1,126 @@
+SupplierAssignmentSystemRequirements
+In this work,you are required to develop an ui (client) application and a console (server)
+application.
+The protocol details between client and server:
+The protocol type is either Json or Xml.
+Datainrequestmessageisalistofsuppliers.Eachdataiteminthislistshouldbe
+consists of the following fields:
+Field               Description
+info                Name and surname of the supplier
+type                    1-Only contract: who makes arrangements
+                    but does not supply stock.This type of
+                    supplier works with another supplier who
+                    can supply stock
+                        2-Only stock:who supplies stock but does
+                    not make arrangements.This type of
+                    supplier works with another supplier who
+                    can do arrangements
+                        3-Both contract and stock.This supplier
+                    can make arrangements and can supply
+                    stock.
+reservedDays        The days in month supplier not available:
+                    {2,10,15} means that the supplier is not
+                    available at 2nd,10th and 15th of the next
+                    month.
+The response message contains a list of assignments. Each assignment consists of
+the following fields:
+Field               Description
+dayOfTheMonth       The Day of the month the supplier assigned
+contractSupplier    Name and surname of the supplier who will
+                    be contractor in the day
+stockSupplier       Name and surname of the supplier who will
+                    be stockman in the day
+Sample data in the response message is shared in the Examples section.
+The client application requirements:
+The client application should manage a sqlite database with the name of
+“suppliers.db”.
+The database is managed by sqlite
+The database has at least two tables that are “Suppliers” and
+“SupplierAssginments”. At the beginning of the program, create tables if they
+do not exist.
+Keep supplierInfo, supplierType and lastReservedDays in Suppliers
+table
+Keep contractSupplier, stockSupplier, dayOfMonth, month in the
+“SupplierAssginments” table.
+The client application has a form with the title of “Add Supplier” to define supplier
+details.
+In the form;
+User can enter supplier name and surname
+User can select supplier type
+When Client submits the form, a new record where lastReservedDays field is
+empty inserted to “Suppliers” table in the sqlite database
+The client application has a form with title of “Edit Supplier” to search and edit
+supplier details
+User can enter a few of the name of the customer to search
+Or user can enter nothing
+When the user presses the “Search” button”, the list of the suppliers which
+contains entered text are shown on the form. Each list item shows
+The value in the supplierInfo column of the database table
+The value in the supplierType column of the database table
+The value in the lastReservedDays column of the database table
+User can select one of supplier in the list and can change the values
+User can change the “supplier type” field
+When “submit” is clicked, the record in the sqlite database is updated
+User can remove one of the supplier in the list
+When “remove” is clicked, the record in the sqlite database is removed
+The client application has a form to send suppliers to the Server application and to
+receive the assignment list from server
+When the form is opened, list all the customers
+Users can select any customer to define reserved days.
+When send is clicked;
+Ask ip of the server to be connected
+Ask port of the server to be connected
+Then, the list is sent to the server as json or xml.
+After the server successful response,
+lastReservedDays of the “Suppliers” table is updated
+For each item in assignments of the server response is added to
+“SupplierAssignments” table
+Use contractSupplier field in response message as
+contractSupplier column value
+Use stockSupplier field in response message as stockSupplier
+column value
+Use dayOfMonth field in response message as dayOfMonth
+column value
+Use currentMonth of the calendar as dayOfMonth column
+value
+The server application requirements:
+The server application asks the port to be listened
+When a request is received, the server makes assignments from the supplier list to
+the day of months. The rules for the assignment;
+A supplier can not assigned to consecutive days (The supplier assigned to
+today can not assigned to tomorrow)
+If a supplier can support both stock and contract, the supplier is assigned to a
+day as contractSupplier and stockSupplier.
+If a supplier supports only contract, the supplier should work with a supplier
+which supports stock
+After making assignments, the server returns the assignments to the client
+
+Examples:
+
+Sample Request (JSON):
+[
+  {
+    "info": "John Doe",
+    "type": 3,
+    "reservedDays": [2, 10, 15]
+  },
+  {
+    "info": "Jane Smith",
+    "type": 1,
+    "reservedDays": [5]
+  }
+]
+
+Sample Response (JSON):
+[
+  {
+    "dayOfTheMonth": 1,
+    "contractSupplier": "John Doe",
+    "stockSupplier": "John Doe"
+  },
+  {
+    "dayOfTheMonth": 2,
+    "contractSupplier": "Jane Smith",
+    "stockSupplier": "John Doe"
+  }
+]

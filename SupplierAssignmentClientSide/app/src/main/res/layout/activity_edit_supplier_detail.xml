@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditSupplierDetail">
+
+    <EditText
+        android:id="@+id/etSupplierName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Supplier Name"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etSupplierType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Supplier Type"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="@+id/etSupplierName"
+        app:layout_constraintStart_toStartOf="@+id/etSupplierName"
+        app:layout_constraintTop_toBottomOf="@+id/etSupplierName" />
+
+    <EditText
+        android:id="@+id/etReservedDays"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Reserved Days (e.g. 1, 15, 31)"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="@+id/etSupplierType"
+        app:layout_constraintStart_toStartOf="@+id/etSupplierType"
+        app:layout_constraintTop_toBottomOf="@+id/etSupplierType" />
+
+    <Button
+        android:id="@+id/btnUpdateSupplier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Update Supplier"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etReservedDays" />
+
+    <Button
+        android:id="@+id/btnDeleteSupplier"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Delete Supplier"
+        android:textColor="@android:color/holo_red_dark"
+        app:layout_constraintEnd_toEndOf="@+id/btnUpdateSupplier"
+        app:layout_constraintStart_toStartOf="@+id/btnUpdateSupplier"
+        app:layout_constraintTop_toBottomOf="@+id/btnUpdateSupplier" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
