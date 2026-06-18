@@ -169,9 +169,7 @@ public class SendToServerActivity extends AppCompatActivity {
             Log.e("Network", "Received empty or null response from server");
             Toast.makeText(this, "Server returned no data", Toast.LENGTH_SHORT).show();
             return;
-        }
-
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        }        Gson gson = new Gson();
         try {
             Type mapType = new TypeToken<Map<String, List<Assignment>>>() {}.getType();
             Map<String, List<Assignment>> data = gson.fromJson(json, mapType);
@@ -179,7 +177,9 @@ public class SendToServerActivity extends AppCompatActivity {
 
             if (assignments != null && !assignments.isEmpty()) {
                 Toast.makeText(this, "Received " + assignments.size() + " assignments", Toast.LENGTH_SHORT).show();
-                
+
+                int currentMonth = java.util.Calendar.getInstance().get(java.util.Calendar.MONTH) + 1;
+
                 new Thread (() -> {
                     repository.clearAssignments();
                     // Track days assigned to each supplier
@@ -191,11 +191,11 @@ public class SendToServerActivity extends AppCompatActivity {
                         // Map days to suppliers
                         String contract = a.getContractSupplier();
                         if (contract != null) {
-                            supplierAssignedDays.computeIfAbsent(contract, k -> new ArrayList<>()).add(a.getDayOfMonth());
+                            supplierAssignedDays.computeIfAbsent(contract, k -> new ArrayList<>()).add(a.getDayOfTheMonth());
                         }
                         String stock = a.getStockSupplier();
                         if (stock != null && !stock.equals(contract)) {
-                            supplierAssignedDays.computeIfAbsent(stock, k -> new ArrayList<>()).add(a.getDayOfMonth());
+                            supplierAssignedDays.computeIfAbsent(stock, k -> new ArrayList<>()).add(a.getDayOfTheMonth());
                         }
                     }
                     
