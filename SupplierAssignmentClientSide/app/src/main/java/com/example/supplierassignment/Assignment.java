@@ -2,6 +2,7 @@ package com.example.supplierassignment;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "SupplierAssignments")
@@ -9,21 +10,27 @@ public class Assignment {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
+    @Expose
+    @SerializedName("contractSupplier")
     private String contractSupplier;
+
+    @Expose
+    @SerializedName("stockSupplier")
     private String stockSupplier;
+
+    @Expose
     @SerializedName("dayOfTheMonth")
     private int dayOfMonth;
+
     private int month;
 
-    // Constructor
     public Assignment(String contractSupplier, String stockSupplier, int dayOfMonth, int month) {
-        setContractSupplier(contractSupplier);
-        setStockSupplier(stockSupplier);
-        setDayOfMonth(dayOfMonth);
-        setMonth(month);
+        this.contractSupplier = contractSupplier;
+        this.stockSupplier = stockSupplier;
+        this.dayOfMonth = dayOfMonth;
+        this.month = month;
     }
 
-    // Add your Getters and Setters here (Required for Room)
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getContractSupplier() { return contractSupplier; }

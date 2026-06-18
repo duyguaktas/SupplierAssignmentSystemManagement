@@ -4,6 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
 import androidx.room.Ignore;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,18 +13,25 @@ import java.util.List;
 @Entity(tableName = "Suppliers")
 public class Supplier {
     @PrimaryKey(autoGenerate = true)
+    @Expose
+    @SerializedName("id")
     private int id;
     
     @ColumnInfo(name = "info")
+    @Expose
+    @SerializedName("info")
     private String info;
     
     @ColumnInfo(name = "type")
+    @Expose
+    @SerializedName("type")
     private int type;
     
     @ColumnInfo(name = "reservedDays")
-    private transient String reservedDays;
+    private String reservedDays;
 
     @Ignore
+    @Expose
     @SerializedName("reservedDays")
     private List<Integer> reservedDaysList;
 

@@ -1,13 +1,10 @@
 package com.example.supplierassignment;
 
-import static android.app.ProgressDialog.show;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -18,15 +15,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.example.supplierassignment.databinding.ActivitySendToServerBinding;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -76,7 +72,7 @@ public class SendToServerActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
             return true;
         }
         if (item.getItemId() == R.id.action_reset_db) {
@@ -175,7 +171,7 @@ public class SendToServerActivity extends AppCompatActivity {
             return;
         }
 
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         try {
             Type mapType = new TypeToken<Map<String, List<Assignment>>>() {}.getType();
             Map<String, List<Assignment>> data = gson.fromJson(json, mapType);
@@ -239,8 +235,8 @@ public class SendToServerActivity extends AppCompatActivity {
                 for (Supplier s : suppliers) {
                     s.getReservedDaysList();
                 }
-
-                Gson gson = new Gson();
+                
+                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
                 Map<String, List<Supplier>> wrapper = new HashMap<>();
                 wrapper.put("suppliers", suppliers);
                 String jsonRequest = gson.toJson(wrapper);
