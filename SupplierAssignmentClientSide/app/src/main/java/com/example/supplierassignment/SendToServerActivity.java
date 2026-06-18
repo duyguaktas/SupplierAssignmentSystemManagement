@@ -236,7 +236,7 @@ public class SendToServerActivity extends AppCompatActivity {
                     s.getReservedDaysList();
                 }
                 
-                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+                Gson gson = new Gson();
                 Map<String, List<Supplier>> wrapper = new HashMap<>();
                 wrapper.put("suppliers", suppliers);
                 String jsonRequest = gson.toJson(wrapper);
