@@ -11,6 +11,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.supplierassignment.databinding.ActivityAddSupplierBinding;
 
+import android.view.MenuItem;
+
 public class AddSupplier extends AppCompatActivity {
 
     private ActivityAddSupplierBinding binding;
@@ -23,6 +25,11 @@ public class AddSupplier extends AppCompatActivity {
         
         binding = ActivityAddSupplierBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        setSupportActionBar(binding.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         
         repository = new SupplierRepository(this);
         
@@ -33,6 +40,15 @@ public class AddSupplier extends AppCompatActivity {
         });
 
         binding.btnSaveSupplier.setOnClickListener(v -> addSupplier());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void addSupplier() {

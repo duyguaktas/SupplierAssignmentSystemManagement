@@ -169,64 +169,80 @@ public class SendToServerActivity extends AppCompatActivity {
     }
 
     private void handleServerResponse(String json){
-        Gson gson = new Gson();
-        Type mapType = new TypeToken<Map<String, List<Assignment>>>() {}.getType();
-        Map<String, List<Assignment>> data = gson.fromJson(json, mapType);
-        List<Assignment> assignments = data.get("assignments");
-
-        if (assignments != null && !assignments.isEmpty()) {
-            Toast.makeText(this, "Received " + assignments.size() + " assignments from server", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "No assignments received", Toast.LENGTH_SHORT).show();
+        if (json == null || json.isEmpty()) {
+            Log.e("Network", "Received empty or null response from server");
+            Toast.makeText(this, "Server returned no data", Toast.LENGTH_SHORT).show();
+            return;
         }
-        
-        new Thread (
-                () -> {
-                    repository.clearAssignments();
-                    if (assignments != null) {
-                        for (Assignment a : assignments) {
-                            repository.addAssignment(a);
-                        }
+
+        Gson gson = new Gson();
+        try {
+            Type mapType = new TypeToken<Map<String, List<Assignment>>>() {}.getType();
+            Map<String, List<Assignment>> data = gson.fromJson(json, mapType);
+            List<Assignment> assignments = data.get("assignments");
+
+            if (assignments != null && !assignments.isEmpty()) {
+                Toast.makeText(this, "Received " + assignments.size() + " assignments", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "No assignments received", Toast.LENGTH_SHORT).show();
+            }
+            
+            new Thread (() -> {
+                repository.clearAssignments();
+                if (assignments != null) {
+                    for (Assignment a : assignments) {
+                        repository.addAssignment(a);
                     }
-                    runOnUiThread(
-                            () -> {
-                                Toast.makeText(this, "All assignments saved!", Toast.LENGTH_LONG).show();
-                            }
-                    );
                 }
-        ).start();
+                runOnUiThread(() -> Toast.makeText(this, "All assignments saved!", Toast.LENGTH_LONG).show());
+            }).start();
+        } catch (Exception e) {
+            Log.e("Network", "Error parsing server response: " + e.getMessage());
+            Toast.makeText(this, "Failed to parse server response", Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void sendDataToServer(String ip, int port) {
-        new Thread(
-                () -> { try { List<Supplier> suppliers = repository.getAllSuppliers("");
-                    Gson gson = new Gson();
-                    Map<String, List<Supplier>> wrapper = new HashMap<>();
-                    wrapper.put("suppliers", suppliers);
-                    String jsonRequest = gson.toJson(wrapper);
-                    
-                    Socket socket = new Socket(ip, port);
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println(jsonRequest);
+        // Show a simple loading indicator
+        binding.btnSendToServer.setEnabled(false);
+        binding.btnSendToServer.setText("Connecting...");
 
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    String jsonResponse = in.readLine();
-                    Log.d("Network", "Response: " + jsonResponse);
+        new Thread(() -> { 
+            try { 
+                List<Supplier> suppliers = repository.getAllSuppliers("");
+                Gson gson = new Gson();
+                Map<String, List<Supplier>> wrapper = new HashMap<>();
+                wrapper.put("suppliers", suppliers);
+                String jsonRequest = gson.toJson(wrapper);
+                
+                Log.d("Network", "Sending Request: " + jsonRequest);
+                
+                Socket socket = new Socket(ip, port);
+                socket.setSoTimeout(5000); // 5 second timeout
 
-                    runOnUiThread(
-                            () -> { 
-                                handleServerResponse(jsonResponse);
-                            }
-                    );
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                out.println(jsonRequest);
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                String jsonResponse = in.readLine();
+                
+                Log.d("Network", "Received Response: " + jsonResponse);
+
+                runOnUiThread(() -> { 
+                    binding.btnSendToServer.setEnabled(true);
+                    binding.btnSendToServer.setText("Connect & Send");
+                    handleServerResponse(jsonResponse);
+                });
                 socket.close();
-                } catch (Exception e) {
-                    runOnUiThread(
-                            () -> {
-                                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                    );
-                }
-            }).start();
+            } catch (Exception e) {
+                Log.e("Network", "Connection error: " + e.getMessage());
+                runOnUiThread(() -> {
+                    binding.btnSendToServer.setEnabled(true);
+                    binding.btnSendToServer.setText("Connect & Send");
+                    Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        }).start();
     }
     
 }
