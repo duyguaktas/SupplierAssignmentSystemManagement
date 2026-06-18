@@ -28,7 +28,7 @@ public class Supplier {
 
     @Ignore
     @SerializedName("reservedDays")
-    private List<Integer> reservedDaysList;
+    private transient List<Integer> reservedDaysList;
 
     public Supplier(int id, String info, int type, String reservedDays) {
         setId(id);
@@ -68,8 +68,8 @@ public class Supplier {
     }
 
     public void setReservedDays(String reservedDays) {
-        this.reservedDays = formatReservedDays(rawToFormattedList(reservedDays));
-        this.reservedDaysList = rawToFormattedList(this.reservedDays);
+        this.reservedDaysList = rawToFormattedList(reservedDays);
+        this.reservedDays = formatReservedDays(this.reservedDaysList);
     }
 
     public List<Integer> getReservedDaysList() {

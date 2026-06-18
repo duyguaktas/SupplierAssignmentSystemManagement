@@ -13,10 +13,18 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter port number: ");
+        int port = 8080;
 
-        int port = sc.nextInt();
+        try {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Enter port number: ");
+            // Only try to read if there is an input stream available
+            if (sc.hasNextInt()) {
+                port = sc.nextInt();
+            }
+        } catch (Exception e) {
+            System.out.println("Console input timed out or not supported by IDE runner. Defaulting to port: " + port);
+        }
 
         try (ServerSocket server = new ServerSocket(port)) {
             System.out.println("Server listening on port " + port);
