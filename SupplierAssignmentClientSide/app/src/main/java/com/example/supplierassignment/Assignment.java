@@ -22,7 +22,6 @@ public class Assignment {
         this.month = month;
     }
 
-    // Add your Getters and Setters here (Required for Room)
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getContractSupplier() { return contractSupplier; }
