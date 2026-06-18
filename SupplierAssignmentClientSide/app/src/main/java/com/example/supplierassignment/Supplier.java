@@ -3,6 +3,11 @@ package com.example.supplierassignment;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
+import androidx.room.Ignore;
+import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Entity(tableName = "Suppliers")
 public class Supplier {
@@ -16,7 +21,11 @@ public class Supplier {
     private int type;
     
     @ColumnInfo(name = "reservedDays")
-    private String reservedDays;
+    private transient String reservedDays;
+
+    @Ignore
+    @SerializedName("reservedDays")
+    private List<Integer> reservedDaysList;
 
     public Supplier(int id, String info, int type, String reservedDays) {
         setId(id);
@@ -56,15 +65,27 @@ public class Supplier {
     }
 
     public void setReservedDays(String reservedDays) {
-        this.reservedDays = formatReservedDays(reservedDays);
+        this.reservedDays = formatReservedDays(rawToFormattedList(reservedDays));
+        this.reservedDaysList = rawToFormattedList(this.reservedDays);
     }
 
-    public static String formatReservedDays(String rawInput){
-        if (rawInput == null || rawInput.trim().isEmpty()) return "";
+    public List<Integer> getReservedDaysList() {
+        if (reservedDaysList == null) {
+            reservedDaysList = rawToFormattedList(reservedDays);
+        }
+        return reservedDaysList;
+    }
+
+    public void setReservedDaysList(List<Integer> reservedDaysList) {
+        this.reservedDaysList = reservedDaysList;
+        this.reservedDays = formatReservedDays(reservedDaysList);
+    }
+
+    private List<Integer> rawToFormattedList(String rawInput) {
+        List<Integer> dayList = new ArrayList<>();
+        if (rawInput == null || rawInput.trim().isEmpty()) return dayList;
 
         String[] daysArray = rawInput.split(",");
-        java.util.List<Integer> dayList = new java.util.ArrayList<>();
-
         for (String day : daysArray) {
             try {
                 int d = Integer.parseInt(day.trim());
@@ -73,8 +94,12 @@ public class Supplier {
                 }
             } catch (NumberFormatException ignored) {}
         }
+        Collections.sort(dayList);
+        return dayList;
+    }
 
-        java.util.Collections.sort(dayList);
+    public static String formatReservedDays(List<Integer> dayList){
+        if (dayList == null || dayList.isEmpty()) return "";
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < dayList.size(); i++) {

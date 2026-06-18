@@ -2,6 +2,7 @@ package com.example.supplierassignment;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "SupplierAssignments")
 public class Assignment {
@@ -10,6 +11,7 @@ public class Assignment {
 
     private String contractSupplier;
     private String stockSupplier;
+    @SerializedName("dayOfTheMonth")
     private int dayOfMonth;
     private int month;
 

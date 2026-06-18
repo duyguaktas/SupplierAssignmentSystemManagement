@@ -183,19 +183,44 @@ public class SendToServerActivity extends AppCompatActivity {
 
             if (assignments != null && !assignments.isEmpty()) {
                 Toast.makeText(this, "Received " + assignments.size() + " assignments", Toast.LENGTH_SHORT).show();
+                
+                new Thread (() -> {
+                    repository.clearAssignments();
+                    // Track days assigned to each supplier
+                    Map<String, List<Integer>> supplierAssignedDays = new HashMap<>();
+                    
+                    for (Assignment a : assignments) {
+                        repository.addAssignment(a);
+                        
+                        // Map days to suppliers
+                        String contract = a.getContractSupplier();
+                        if (contract != null) {
+                            supplierAssignedDays.computeIfAbsent(contract, k -> new ArrayList<>()).add(a.getDayOfMonth());
+                        }
+                        String stock = a.getStockSupplier();
+                        if (stock != null && !stock.equals(contract)) {
+                            supplierAssignedDays.computeIfAbsent(stock, k -> new ArrayList<>()).add(a.getDayOfMonth());
+                        }
+                    }
+                    
+                    // Update suppliers in database
+                    List<Supplier> suppliers = repository.getAllSuppliers("");
+                    for (Supplier s : suppliers) {
+                        List<Integer> assignedDays = supplierAssignedDays.get(s.getInfo());
+                        if (assignedDays != null) {
+                            s.setReservedDaysList(assignedDays);
+                            repository.updateSupplier(s);
+                        }
+                    }
+                    
+                    runOnUiThread(() -> {
+                        loadSuppliers();
+                        Toast.makeText(this, "Assignments and Supplier Reserved Days saved!", Toast.LENGTH_LONG).show();
+                    });
+                }).start();
             } else {
                 Toast.makeText(this, "No assignments received", Toast.LENGTH_SHORT).show();
             }
-            
-            new Thread (() -> {
-                repository.clearAssignments();
-                if (assignments != null) {
-                    for (Assignment a : assignments) {
-                        repository.addAssignment(a);
-                    }
-                }
-                runOnUiThread(() -> Toast.makeText(this, "All assignments saved!", Toast.LENGTH_LONG).show());
-            }).start();
         } catch (Exception e) {
             Log.e("Network", "Error parsing server response: " + e.getMessage());
             Toast.makeText(this, "Failed to parse server response", Toast.LENGTH_SHORT).show();
@@ -210,6 +235,11 @@ public class SendToServerActivity extends AppCompatActivity {
         new Thread(() -> { 
             try { 
                 List<Supplier> suppliers = repository.getAllSuppliers("");
+                // Populate the list from the formatted string for JSON serialization
+                for (Supplier s : suppliers) {
+                    s.getReservedDaysList();
+                }
+
                 Gson gson = new Gson();
                 Map<String, List<Supplier>> wrapper = new HashMap<>();
                 wrapper.put("suppliers", suppliers);
