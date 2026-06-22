@@ -2,7 +2,6 @@ package com.example.supplierassignment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -12,11 +11,11 @@ import androidx.activity.ComponentActivity;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.supplierassignment.databinding.FragmentEditSupplierDetailBinding;
@@ -31,7 +30,7 @@ public class EditSupplierDetailFragment extends Fragment {
     };
 
     private FragmentEditSupplierDetailBinding binding;
-    private SupplierRepository repository;
+    private SupplierViewModel supplierViewModel;
     private int id;
 
     @Override
@@ -49,7 +48,7 @@ public class EditSupplierDetailFragment extends Fragment {
             Navigation.findNavController(v).navigateUp();
         });
 
-        repository = new SupplierRepository(requireContext());
+        supplierViewModel = new ViewModelProvider(requireParentFragment()).get(SupplierViewModel.class);
         setupTypeDropdown();
         
         ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
@@ -88,13 +87,13 @@ public class EditSupplierDetailFragment extends Fragment {
     }
 
     private void deleteSupplier() {
-        repository.deleteSupplier(id);
+        supplierViewModel.deleteSupplier(id);
         Toast.makeText(requireContext(), "Supplier deleted", Toast.LENGTH_SHORT).show();
         Navigation.findNavController(requireView()).navigateUp();
     }
 
     private void loadSupplier() {
-        Supplier supplier = repository.getSupplierById(id);
+        Supplier supplier = supplierViewModel.getSupplierById(id);
         if (supplier != null) {
             binding.etSupplierName.setText(supplier.getInfo());
             binding.etReservedDays.setText(supplier.getReservedDays());
@@ -132,7 +131,7 @@ public class EditSupplierDetailFragment extends Fragment {
 
         try {
             Supplier updatedSupplier = new Supplier(id, name, type, reservedStr);
-            repository.updateSupplier(updatedSupplier);
+            supplierViewModel.updateSupplier(updatedSupplier);
             
             Toast.makeText(requireContext(), "Supplier updated successfully", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(requireView()).navigateUp();

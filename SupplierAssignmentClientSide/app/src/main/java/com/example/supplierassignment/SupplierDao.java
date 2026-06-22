@@ -1,7 +1,7 @@
 package com.example.supplierassignment;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
@@ -25,9 +25,6 @@ public interface SupplierDao {
     @Update
     void updateSupplier(Supplier supplier);
 
-    @Delete
-    void deleteSupplier(Supplier supplier);
-
     @Query("DELETE FROM Suppliers WHERE id = :id")
     void deleteById(int id);
 
@@ -45,4 +42,11 @@ public interface SupplierDao {
 
     @Query("DELETE FROM sqlite_sequence WHERE name='SupplierAssignments' OR name='Suppliers'")
     void resetSequences();
+
+    @Query("SELECT * FROM Suppliers")
+    LiveData<List<Supplier>> getAllSuppliersLiveData();
+    @Query("SELECT * FROM Suppliers WHERE info LIKE :query")
+    LiveData<List<Supplier>> searchSuppliersLiveData(String query);
+    @Query("SELECT * FROM Suppliers WHERE id = :id")
+    LiveData<Supplier> getSupplierByIdLiveData(int id);
 }

@@ -1,14 +1,11 @@
 package com.example.supplierassignment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,18 +13,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.supplierassignment.databinding.FragmentEditSupplierBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class EditSupplierFragment extends Fragment {
 
     private FragmentEditSupplierBinding binding;
-    private SupplierRepository repository;
-    private CustomAdapter adapter;
+    private SupplierViewModel supplierViewModel;
+    private SupplierAdapter adapter;
 
     @Nullable
     @Override
@@ -49,9 +44,18 @@ public class EditSupplierFragment extends Fragment {
         binding.toolbar.setNavigationOnClickListener(v -> {
             Navigation.findNavController(v).navigateUp();
         });
+        setupRecycleView();
 
-        repository = new SupplierRepository(requireContext());
-        setupListView();
+        supplierViewModel = new ViewModelProvider(requireParentFragment()).get(SupplierViewModel.class);
+        supplierViewModel.setSearchQuery("");
+        supplierViewModel.getSuppliers().observe(getViewLifecycleOwner(), suppliers -> {
+            adapter.submitList(suppliers);
+        });
+        String savedQuery = supplierViewModel.getSearchQueryValue();
+        if (savedQuery != null && !savedQuery.isEmpty()) {
+            binding.etSearchBar.setText(savedQuery);
+            binding.rvSuppliers.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -60,25 +64,20 @@ public class EditSupplierFragment extends Fragment {
         binding = null;
     }
 
-    private void setupListView() {
-        adapter = new CustomAdapter(requireContext(), new ArrayList<>());
-        binding.lvSuppliers.setAdapter(adapter);
+    private void setupRecycleView() {
+        adapter = new SupplierAdapter(supplier -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt(EditSupplierDetailFragment.EXTRA_SUPPLIER_ID, supplier.getId());
+            Navigation.findNavController(requireView()).navigate(
+                    R.id.action_editSupplier_to_editSupplierDetail, bundle
+            );
 
-        binding.lvSuppliers.setOnItemClickListener((parent, view, position, id) -> {
-            Supplier selectedSupplier = adapter.getItem(position);
-            if (selectedSupplier != null) {
-                Bundle bundle = new Bundle();
-                bundle.putInt(EditSupplierDetailFragment.EXTRA_SUPPLIER_ID, selectedSupplier.getId());
-
-                Navigation.findNavController(view).navigate(
-                        R.id.action_editSupplier_to_editSupplierDetail,
-                        bundle
-                );
-            }
         });
+        binding.rvSuppliers.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(requireContext()));
+        binding.rvSuppliers.setAdapter(adapter);
 
         binding.btnSearch.setOnClickListener(v -> {
-            binding.lvSuppliers.setVisibility(View.VISIBLE);
+            binding.rvSuppliers.setVisibility(View.VISIBLE);
             String query = binding.etSearchBar.getText().toString();
             updateList(query);
         });
@@ -95,41 +94,10 @@ public class EditSupplierFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {}
         });
-
-        updateList("");
     }
 
     private void updateList(String query) {
-        List<Supplier> results = repository.getAllSuppliers(query);
-        adapter.clear();
-        adapter.addAll(results);
-        adapter.notifyDataSetChanged();
+        supplierViewModel.setSearchQuery(query);
     }
 
-}
-
-class CustomAdapter extends ArrayAdapter<Supplier>{
-
-    public CustomAdapter(@NonNull Context context, List<Supplier> suppliers) {
-        super(context, 0, suppliers);
-    }
-    @Override
-    public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent){
-        Supplier supplier = getItem(position);
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.supplier_list_item, parent, false);
-        }
-
-        TextView tvName = convertView.findViewById(R.id.textViewSupplierName);
-        TextView tvType = convertView.findViewById(R.id.textViewSupplierType);
-        TextView tvReserved = convertView.findViewById(R.id.textViewReservedDays);
-    
-        if (supplier != null) {
-            tvName.setText(supplier.getInfo());
-            tvType.setText(String.valueOf(supplier.getType()));
-            tvReserved.setText(supplier.getReservedDays());
-        }
-
-        return convertView;
-    }
 }

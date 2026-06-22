@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.supplierassignment.databinding.FragmentHomeBinding;
@@ -17,7 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
-    private SupplierRepository repository;
+    private SupplierViewModel supplierViewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -29,7 +30,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        repository = new SupplierRepository(requireContext());
+        supplierViewModel = new ViewModelProvider(requireParentFragment()).get(SupplierViewModel.class);
 
         // Set up Toolbar Menu for Reset Database
         binding.toolbar.inflateMenu(R.menu.menu_send_to_server);
@@ -60,7 +61,7 @@ public class HomeFragment extends Fragment {
                 .setMessage("This will delete all suppliers and assignments, and reset IDs to 1. Are you sure?")
                 .setPositiveButton("Reset", (dialog, which) -> {
                     new Thread(() -> {
-                        repository.resetDatabase();
+                        supplierViewModel.resetDatabase();
                         if (isAdded()) {
                             requireActivity().runOnUiThread(() -> {
                                 Toast.makeText(requireContext(), "Database reset successfully", Toast.LENGTH_SHORT).show();

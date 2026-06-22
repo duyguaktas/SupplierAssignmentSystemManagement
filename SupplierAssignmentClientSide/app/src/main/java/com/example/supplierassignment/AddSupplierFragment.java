@@ -12,6 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.supplierassignment.databinding.FragmentAddSupplierBinding;
@@ -19,7 +20,7 @@ import com.example.supplierassignment.databinding.FragmentAddSupplierBinding;
 public class AddSupplierFragment extends Fragment {
 
     private FragmentAddSupplierBinding binding;
-    private SupplierRepository repository;
+    private SupplierViewModel supplierViewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -31,8 +32,9 @@ public class AddSupplierFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        repository = new SupplierRepository(requireContext());
-        
+        supplierViewModel = new ViewModelProvider(requireParentFragment()).get(SupplierViewModel.class);
+
+
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -74,7 +76,7 @@ public class AddSupplierFragment extends Fragment {
         }
 
         try {
-            repository.addSupplier(supplierName, type);
+            supplierViewModel.addSupplier(supplierName, type);
             Toast.makeText(requireContext(), "Supplier added successfully", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(requireView()).navigateUp();
         } catch (Exception e) {
