@@ -12,8 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.supplierassignment.databinding.FragmentSendToServerBinding;
@@ -56,14 +58,25 @@ public class SendToServerFragment extends Fragment {
             adapter.submitList(suppliers);
         });
 
+        supplierViewModel.toastMessage.observe(getViewLifecycleOwner(), message -> {
+            if (message != null) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                supplierViewModel.setSearchQuery(""); // Refresh list on reset/update
+                supplierViewModel.clearToastMessage();
+            }
+        });
+
         networkViewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
             binding.btnSendToServer.setEnabled(!loading);
             binding.btnSendToServer.setText(loading ? "Connecting..." : "Connect & Send");
         });
 
         supplierViewModel.setSearchQuery("");
-
-        binding.toolbar.setNavigationOnClickListener(v -> { Navigation.findNavController(v).navigateUp(); });
+        
+        NavController navController = Navigation.findNavController(view);
+        
+        NavigationUI.setupWithNavController(binding.toolbar, navController);
+        
         binding.toolbar.setOnMenuItemClickListener(item -> { if (item.getItemId() == R.id.action_reset_db) { showResetDialog(); return true; } return false; });
 
         binding.btnSendToServer.setOnClickListener(v -> showConnectionDialog());
@@ -80,8 +93,6 @@ public class SendToServerFragment extends Fragment {
                 .setMessage("This will delete all suppliers and assignments, and reset IDs to 1. Are you sure?")
                 .setPositiveButton("Reset", (dialog, which) -> {
                     supplierViewModel.resetDatabase();
-                    binding.rvSuppliers.postDelayed(() -> supplierViewModel.setSearchQuery(""), 500);
-                    Toast.makeText(requireContext(), "Database reset started", Toast.LENGTH_SHORT).show();
                 }).setNegativeButton("Cancel", null).show(); }
 
     private void showConnectionDialog() {

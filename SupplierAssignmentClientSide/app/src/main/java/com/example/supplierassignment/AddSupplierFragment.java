@@ -13,7 +13,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import com.example.supplierassignment.databinding.FragmentAddSupplierBinding;
 
@@ -34,16 +36,14 @@ public class AddSupplierFragment extends Fragment {
 
         supplierViewModel = new ViewModelProvider(requireParentFragment()).get(SupplierViewModel.class);
 
-
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        binding.toolbar.setNavigationOnClickListener(v -> {
-            Navigation.findNavController(v).navigateUp();
-        });
+        NavController navController = Navigation.findNavController(view);
+        NavigationUI.setupWithNavController(binding.toolbar, navController);
 
         binding.btnSaveSupplier.setOnClickListener(v -> addSupplier());
     }

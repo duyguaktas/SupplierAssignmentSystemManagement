@@ -14,12 +14,19 @@ public class SupplierViewModel extends AndroidViewModel {
     private final MutableLiveData<String> searchQuery = new MutableLiveData<>("");
     private final LiveData<List<Supplier>> suppliers;
 
+    private final MutableLiveData<String> _toastMessage = new MutableLiveData<>();
+    public LiveData<String> toastMessage = _toastMessage;
+
     public SupplierViewModel(@NonNull Application application) {
         super(application);
         repository = new SupplierRepository(application);
 
         suppliers = Transformations.switchMap(searchQuery, repository::getAllSuppliersLiveData
         );
+    }
+
+    public void clearToastMessage() {
+        _toastMessage.setValue(null);
     }
 
     // The Fragment will call this to update the search filter
@@ -64,6 +71,9 @@ public class SupplierViewModel extends AndroidViewModel {
     }
 
     public void resetDatabase() {
-        new Thread(repository::resetDatabase).start();
+        new Thread(() -> {
+            repository.resetDatabase();
+            _toastMessage.postValue("Database reset successfully");
+        }).start();
     }
 }

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/sendToServerFragment"
         android:name="com.example.supplierassignment.SendToServerFragment"
-        android:label="SendToServerFragment" >
+        android:label="Send To Server" >
         <action
             android:id="@+id/action_sendToServerFragment_to_editSupplierDetail"
             app:destination="@id/editSupplierDetail" />
@@ -16,7 +16,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.supplierassignment.HomeFragment"
-        android:label="HomeFragment" >
+        android:label="Supplier Assignment System" >
         <action
             android:id="@+id/action_homeFragment_to_addSupplier"
             app:destination="@id/addSupplier" />
@@ -30,12 +30,12 @@
     <fragment
         android:id="@+id/addSupplier"
         android:name="com.example.supplierassignment.AddSupplierFragment"
-        android:label="fragment_add_supplier"
+        android:label="Add Supplier"
         tools:layout="@layout/fragment_add_supplier" />
     <fragment
         android:id="@+id/editSupplier"
         android:name="com.example.supplierassignment.EditSupplierFragment"
-        android:label="fragment_edit_supplier"
+        android:label="Edit Supplier"
         tools:layout="@layout/fragment_edit_supplier">
         <action
             android:id="@+id/action_editSupplier_to_editSupplierDetail"
@@ -44,6 +44,6 @@
     <fragment
         android:id="@+id/editSupplierDetail"
         android:name="com.example.supplierassignment.EditSupplierDetailFragment"
-        android:label="fragment_edit_supplier_detail"
+        android:label="Supplier Details"
         tools:layout="@layout/fragment_edit_supplier_detail"/>
 </navigation>

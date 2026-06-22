@@ -14,7 +14,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import com.example.supplierassignment.databinding.FragmentEditSupplierBinding;
 
@@ -23,6 +25,7 @@ public class EditSupplierFragment extends Fragment {
     private FragmentEditSupplierBinding binding;
     private SupplierViewModel supplierViewModel;
     private SupplierAdapter adapter;
+    private NavController navController;
 
     @Nullable
     @Override
@@ -41,9 +44,10 @@ public class EditSupplierFragment extends Fragment {
             return insets;
         });
 
-        binding.toolbar.setNavigationOnClickListener(v -> {
-            Navigation.findNavController(v).navigateUp();
-        });
+        navController = Navigation.findNavController(view);
+
+        NavigationUI.setupWithNavController(binding.toolbar, navController);
+
         setupRecycleView();
 
         supplierViewModel = new ViewModelProvider(requireParentFragment()).get(SupplierViewModel.class);
@@ -68,7 +72,7 @@ public class EditSupplierFragment extends Fragment {
         adapter = new SupplierAdapter(supplier -> {
             Bundle bundle = new Bundle();
             bundle.putInt(EditSupplierDetailFragment.EXTRA_SUPPLIER_ID, supplier.getId());
-            Navigation.findNavController(requireView()).navigate(
+            navController.navigate(
                     R.id.action_editSupplier_to_editSupplierDetail, bundle
             );
 
