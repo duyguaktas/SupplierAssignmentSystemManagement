@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/sendToServerFragment"
+        android:name="com.example.supplierassignment.SendToServerFragment"
+        android:label="SendToServerFragment" >
+        <action
+            android:id="@+id/action_sendToServerFragment_to_editSupplierDetail"
+            app:destination="@id/editSupplierDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.supplierassignment.HomeFragment"
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_addSupplier"
+            app:destination="@id/addSupplier" />
+        <action
+            android:id="@+id/action_homeFragment_to_sendToServerFragment"
+            app:destination="@id/sendToServerFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_editSupplier"
+            app:destination="@id/editSupplier" />
+    </fragment>
+    <fragment
+        android:id="@+id/addSupplier"
+        android:name="com.example.supplierassignment.AddSupplierFragment"
+        android:label="fragment_add_supplier"
+        tools:layout="@layout/fragment_add_supplier" />
+    <fragment
+        android:id="@+id/editSupplier"
+        android:name="com.example.supplierassignment.EditSupplierFragment"
+        android:label="fragment_edit_supplier"
+        tools:layout="@layout/fragment_edit_supplier">
+        <action
+            android:id="@+id/action_editSupplier_to_editSupplierDetail"
+            app:destination="@id/editSupplierDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/editSupplierDetail"
+        android:name="com.example.supplierassignment.EditSupplierDetailFragment"
+        android:label="fragment_edit_supplier_detail"
+        tools:layout="@layout/fragment_edit_supplier_detail"/>
+</navigation>

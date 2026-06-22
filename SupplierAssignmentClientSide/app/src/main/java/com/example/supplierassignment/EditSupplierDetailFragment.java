@@ -1,20 +1,27 @@
 package com.example.supplierassignment;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.activity.ComponentActivity;
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
-import com.example.supplierassignment.databinding.ActivityEditSupplierDetailBinding;
+import com.example.supplierassignment.databinding.FragmentEditSupplierDetailBinding;
 
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-
-public class EditSupplierDetail extends AppCompatActivity {
+public class EditSupplierDetailFragment extends Fragment {
 
     public static final String EXTRA_SUPPLIER_ID = "SUPPLIER_ID";
     private static final String[] SUPPLIER_TYPES = {
@@ -23,36 +30,42 @@ public class EditSupplierDetail extends AppCompatActivity {
             "Type 3: Both Contract & Stock"
     };
 
-    private ActivityEditSupplierDetailBinding binding;
+    private FragmentEditSupplierDetailBinding binding;
     private SupplierRepository repository;
     private int id;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        
-        binding = ActivityEditSupplierDetailBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentEditSupplierDetailBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-        setSupportActionBar(binding.toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        EdgeToEdge.enable((ComponentActivity) requireContext());
 
-        repository = new SupplierRepository(this);
+        binding.toolbar.setNavigationOnClickListener(v -> {
+            Navigation.findNavController(v).navigateUp();
+        });
+
+        repository = new SupplierRepository(requireContext());
         setupTypeDropdown();
         
         ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+             return WindowInsetsCompat.CONSUMED;
         });
 
-        id = getIntent().getIntExtra(EXTRA_SUPPLIER_ID, -1);
+        if (getArguments() != null) {
+            id = getArguments().getInt(EXTRA_SUPPLIER_ID, -1);
+        } else {
+            id = -1;
+        }
+
         if (id == -1) {
-            Toast.makeText(this, "Invalid Supplier ID", Toast.LENGTH_SHORT).show();
-            finish();
+            Toast.makeText(requireContext(), "Invalid Supplier ID", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -62,25 +75,22 @@ public class EditSupplierDetail extends AppCompatActivity {
         binding.btnDeleteSupplier.setOnClickListener(v -> deleteSupplier());
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void setupTypeDropdown() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_1, SUPPLIER_TYPES);
         binding.actvSupplierType.setAdapter(adapter);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void deleteSupplier() {
         repository.deleteSupplier(id);
-        Toast.makeText(this, "Supplier deleted", Toast.LENGTH_SHORT).show();
-        finish();
+        Toast.makeText(requireContext(), "Supplier deleted", Toast.LENGTH_SHORT).show();
+        Navigation.findNavController(requireView()).navigateUp();
     }
 
     private void loadSupplier() {
@@ -116,7 +126,7 @@ public class EditSupplierDetail extends AppCompatActivity {
         }
 
         if (type == 0) {
-            Toast.makeText(this, "Please select a supplier type", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please select a supplier type", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -124,12 +134,12 @@ public class EditSupplierDetail extends AppCompatActivity {
             Supplier updatedSupplier = new Supplier(id, name, type, reservedStr);
             repository.updateSupplier(updatedSupplier);
             
-            Toast.makeText(this, "Supplier updated successfully", Toast.LENGTH_SHORT).show();
-            finish();
+            Toast.makeText(requireContext(), "Supplier updated successfully", Toast.LENGTH_SHORT).show();
+            Navigation.findNavController(requireView()).navigateUp();
         } catch (IllegalArgumentException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Update failed", Toast.LENGTH_SHORT).show();
         }
     }
 }

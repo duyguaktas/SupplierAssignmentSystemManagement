@@ -73,7 +73,7 @@ public class AssignmentGenerator {
         List<Assignment> assignments = new ArrayList<>();
 
         Calendar cal = Calendar.getInstance();
-        int month = cal.get(Calendar.MONTH) + 1; // Calendar months are 0-11
+        int month = cal.get(Calendar.MONTH) + 1;
         int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
 

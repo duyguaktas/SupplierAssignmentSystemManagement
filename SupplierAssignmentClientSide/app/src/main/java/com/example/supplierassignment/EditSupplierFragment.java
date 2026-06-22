@@ -4,75 +4,76 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
-import com.example.supplierassignment.databinding.ActivityEditSupplierBinding;
+import com.example.supplierassignment.databinding.FragmentEditSupplierBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import android.view.MenuItem;
+public class EditSupplierFragment extends Fragment {
 
-public class EditSupplier extends AppCompatActivity {
-
-    private ActivityEditSupplierBinding binding;
+    private FragmentEditSupplierBinding binding;
     private SupplierRepository repository;
     private CustomAdapter adapter;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        
-        binding = ActivityEditSupplierBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        binding = FragmentEditSupplierBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-        setSupportActionBar(binding.toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-        
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        repository = new SupplierRepository(this);
+        binding.toolbar.setNavigationOnClickListener(v -> {
+            Navigation.findNavController(v).navigateUp();
+        });
+
+        repository = new SupplierRepository(requireContext());
         setupListView();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     private void setupListView() {
-        adapter = new CustomAdapter(this, new ArrayList<>());
+        adapter = new CustomAdapter(requireContext(), new ArrayList<>());
         binding.lvSuppliers.setAdapter(adapter);
 
         binding.lvSuppliers.setOnItemClickListener((parent, view, position, id) -> {
             Supplier selectedSupplier = adapter.getItem(position);
             if (selectedSupplier != null) {
-                Intent intent = new Intent(EditSupplier.this, EditSupplierDetail.class);
-                intent.putExtra(EditSupplierDetail.EXTRA_SUPPLIER_ID, selectedSupplier.getId());
-                startActivity(intent);
+                Bundle bundle = new Bundle();
+                bundle.putInt(EditSupplierDetailFragment.EXTRA_SUPPLIER_ID, selectedSupplier.getId());
+
+                Navigation.findNavController(view).navigate(
+                        R.id.action_editSupplier_to_editSupplierDetail,
+                        bundle
+                );
             }
         });
 
