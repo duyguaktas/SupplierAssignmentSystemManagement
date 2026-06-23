@@ -71,10 +71,6 @@ public class SupplierRepository {
     
     public String sendDataAndReceiveResponse(String ip, int port) throws Exception {
         List<Supplier> suppliers = supplierDao.getAllSuppliers();
-
-        for (Supplier s: suppliers){
-            s.getReservedDays();
-        }
         
         com.google.gson.Gson gson = new com.google.gson.Gson();
         java.util.Map<String, List<Supplier>> wrapper = new HashMap<>();

@@ -29,17 +29,14 @@ public class SupplierViewModel extends AndroidViewModel {
         _toastMessage.setValue(null);
     }
 
-    // The Fragment will call this to update the search filter
     public void setSearchQuery(String query) {
         searchQuery.setValue(query);
     }
 
-    // The Fragment will "Observe" this to get the list
     public LiveData<List<Supplier>> getSuppliers() {
         return suppliers;
     }
 
-    // Get the current query so we can put it back in the search bar
     public String getSearchQueryValue() {
         return searchQuery.getValue();
     }
@@ -57,7 +54,7 @@ public class SupplierViewModel extends AndroidViewModel {
     }
 
     public void addSupplier(String name, int type){
-        new Thread (() ->{
+        new Thread(() -> {
             repository.addSupplier(name, type);
         }).start();
     }

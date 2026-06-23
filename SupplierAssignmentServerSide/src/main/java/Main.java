@@ -18,7 +18,7 @@ public class Main {
         try {
             Scanner sc = new Scanner(System.in);
             System.out.println("Enter port number: ");
-            // Only try to read if there is an input stream available
+
             if (sc.hasNextInt()) {
                 port = sc.nextInt();
             }

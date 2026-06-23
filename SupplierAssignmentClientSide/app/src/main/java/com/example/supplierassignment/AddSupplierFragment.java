@@ -19,6 +19,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.supplierassignment.databinding.FragmentAddSupplierBinding;
 
+import java.util.Objects;
+
 public class AddSupplierFragment extends Fragment {
 
     private FragmentAddSupplierBinding binding;
@@ -55,7 +57,7 @@ public class AddSupplierFragment extends Fragment {
     }
 
     private void addSupplier() {
-        String supplierName = binding.etSupplierName.getText().toString().trim();
+        String supplierName = Objects.requireNonNull(binding.etSupplierName.getText()).toString().trim();
         int selectedTypeId = binding.rgSupplierType.getCheckedRadioButtonId();
 
         if (supplierName.isEmpty()) {

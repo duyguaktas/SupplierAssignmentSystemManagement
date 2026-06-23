@@ -23,6 +23,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Objects;
+
 public class SendToServerFragment extends Fragment {
 
     private FragmentSendToServerBinding binding;
@@ -121,13 +123,13 @@ public class SendToServerFragment extends Fragment {
                 .setTitle("Connect to Server")
                 .setView(layout)
                 .setPositiveButton("Connect", (dialog, which) -> {
-                    String ip = etIP.getText().toString();
+                    String ip = Objects.requireNonNull(etIP.getText()).toString();
                     if (ip.isEmpty()) {
                         Toast.makeText(requireContext(), "IP address cannot be empty!", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    String portStr = etPort.getText().toString();
+                    String portStr = Objects.requireNonNull(etPort.getText()).toString();
                     if(portStr.isEmpty()){
                         Toast.makeText(requireContext(), "Port cannot be empty!", Toast.LENGTH_SHORT).show();
                         return;

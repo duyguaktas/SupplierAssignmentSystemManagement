@@ -18,7 +18,7 @@ public class SupplierAdapter extends ListAdapter<Supplier, SupplierAdapter.Suppl
     }
 
     public SupplierAdapter(OnItemClickListener listener) {
-        super(new DiffUtil.ItemCallback<Supplier>() {
+        super(new DiffUtil.ItemCallback<>() {
             @Override
             public boolean areItemsTheSame(@NonNull Supplier oldItem, @NonNull Supplier newItem) {
                 return oldItem.getId() == newItem.getId();
@@ -48,7 +48,7 @@ public class SupplierAdapter extends ListAdapter<Supplier, SupplierAdapter.Suppl
         holder.bind(supplier, listener);
     }
 
-    static class SupplierViewHolder extends RecyclerView.ViewHolder {
+    public static class SupplierViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvName, tvType, tvReserved;
 
         public SupplierViewHolder(@NonNull View itemView) {

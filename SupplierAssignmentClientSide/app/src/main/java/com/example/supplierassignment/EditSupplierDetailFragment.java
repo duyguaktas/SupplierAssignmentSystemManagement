@@ -22,6 +22,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.supplierassignment.databinding.FragmentEditSupplierDetailBinding;
 
+import java.util.Objects;
+
 public class EditSupplierDetailFragment extends Fragment {
 
     public static final String EXTRA_SUPPLIER_ID = "SUPPLIER_ID";
@@ -109,9 +111,9 @@ public class EditSupplierDetailFragment extends Fragment {
     }
 
     private void saveSupplier() {
-        String name = binding.etSupplierName.getText().toString().trim();
+        String name = Objects.requireNonNull(binding.etSupplierName.getText()).toString().trim();
         String selectedTypeText = binding.actvSupplierType.getText().toString();
-        String reservedStr = binding.etReservedDays.getText().toString().trim();
+        String reservedStr = Objects.requireNonNull(binding.etReservedDays.getText()).toString().trim();
 
         if (name.isEmpty()) {
             binding.etSupplierName.setError("Name is required");

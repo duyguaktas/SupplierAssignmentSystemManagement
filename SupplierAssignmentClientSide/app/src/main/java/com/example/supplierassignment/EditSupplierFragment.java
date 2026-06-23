@@ -20,6 +20,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.supplierassignment.databinding.FragmentEditSupplierBinding;
 
+import java.util.Objects;
+
 public class EditSupplierFragment extends Fragment {
 
     private FragmentEditSupplierBinding binding;
@@ -52,9 +54,7 @@ public class EditSupplierFragment extends Fragment {
 
         supplierViewModel = new ViewModelProvider(requireParentFragment()).get(SupplierViewModel.class);
         supplierViewModel.setSearchQuery("");
-        supplierViewModel.getSuppliers().observe(getViewLifecycleOwner(), suppliers -> {
-            adapter.submitList(suppliers);
-        });
+        supplierViewModel.getSuppliers().observe(getViewLifecycleOwner(), suppliers -> adapter.submitList(suppliers));
         String savedQuery = supplierViewModel.getSearchQueryValue();
         if (savedQuery != null && !savedQuery.isEmpty()) {
             binding.etSearchBar.setText(savedQuery);
@@ -82,7 +82,7 @@ public class EditSupplierFragment extends Fragment {
 
         binding.btnSearch.setOnClickListener(v -> {
             binding.rvSuppliers.setVisibility(View.VISIBLE);
-            String query = binding.etSearchBar.getText().toString();
+            String query = Objects.requireNonNull(binding.etSearchBar.getText()).toString();
             updateList(query);
         });
 

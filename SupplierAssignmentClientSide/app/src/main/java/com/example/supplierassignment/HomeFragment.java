@@ -68,9 +68,7 @@ public class HomeFragment extends Fragment {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Reset Database")
                 .setMessage("This will delete all suppliers and assignments, and reset IDs to 1. Are you sure?")
-                .setPositiveButton("Reset", (dialog, which) -> {
-                    supplierViewModel.resetDatabase();
-                })
+                .setPositiveButton("Reset", (dialog, which) -> supplierViewModel.resetDatabase())
                 .setNegativeButton("Cancel", null)
                 .show();
     }

@@ -14,7 +14,6 @@ public class NetworkViewModel extends AndroidViewModel {
     public LiveData<Boolean> isLoading = _isLoading;
 
     private final MutableLiveData<String> _statusMessage = new MutableLiveData<>();
-    public LiveData<String> statusMessage = _statusMessage;
 
     public NetworkViewModel(@NonNull Application application) {
         super(application);
