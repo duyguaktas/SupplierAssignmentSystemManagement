@@ -11,7 +11,11 @@
         android:label="Send To Server" >
         <action
             android:id="@+id/action_sendToServerFragment_to_editSupplierDetail"
-            app:destination="@id/editSupplierDetail" />
+            app:destination="@id/editSupplierDetail"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
@@ -19,13 +23,25 @@
         android:label="Supplier Assignment System" >
         <action
             android:id="@+id/action_homeFragment_to_addSupplier"
-            app:destination="@id/addSupplier" />
+            app:destination="@id/addSupplier"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_homeFragment_to_sendToServerFragment"
-            app:destination="@id/sendToServerFragment" />
+            app:destination="@id/sendToServerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_homeFragment_to_editSupplier"
-            app:destination="@id/editSupplier" />
+            app:destination="@id/editSupplier"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/addSupplier"
@@ -39,7 +55,11 @@
         tools:layout="@layout/fragment_edit_supplier">
         <action
             android:id="@+id/action_editSupplier_to_editSupplierDetail"
-            app:destination="@id/editSupplierDetail" />
+            app:destination="@id/editSupplierDetail"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/editSupplierDetail"
