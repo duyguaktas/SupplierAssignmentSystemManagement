@@ -1,4 +1,3 @@
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -78,8 +77,8 @@ public class AssignmentGenerator {
 
 
         for (int day = 1; day <= daysInMonth; day++) {
-            Supplier s1 = null;
-            Supplier s2 = null;
+            Supplier s1 ;
+            Supplier s2 ;
 
             if (day % 2 != 0) { // match type 3 suppliers with odd days
                 s1 = findBestAvailable(type3Suppliers, day, lastContractSupplier, lastStockSupplier);

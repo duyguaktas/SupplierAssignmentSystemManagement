@@ -65,8 +65,7 @@ public class Main {
         List<Assignment> assignmentsOfTheMonth = generator.generateAssignments(suppliers);
         Map<String, List<Assignment>> response = new HashMap<>();
         response.put("assignments", assignmentsOfTheMonth);
-        String jsonOut = gson.toJson(response);
-        return jsonOut;
+        return gson.toJson(response);
     }
 
 }
