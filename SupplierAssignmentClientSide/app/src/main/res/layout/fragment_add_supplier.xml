@@ -42,6 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Supplier Name"
+                app:placeholderText="e.g Hugin Payment Systems"
                 app:startIconDrawable="@android:drawable/ic_menu_edit">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -96,6 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="Save Supplier"
+        android:enabled="false"
         app:icon="@android:drawable/ic_menu_save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

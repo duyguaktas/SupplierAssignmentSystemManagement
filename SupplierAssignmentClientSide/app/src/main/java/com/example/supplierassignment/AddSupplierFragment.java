@@ -1,6 +1,8 @@
 package com.example.supplierassignment;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +49,24 @@ public class AddSupplierFragment extends Fragment {
         NavController navController = Navigation.findNavController(view);
         NavigationUI.setupWithNavController(binding.toolbar, navController);
 
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable editable) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                updateSaveButtonState();
+            }
+        };
+
+        binding.etSupplierName.addTextChangedListener(watcher);
+        binding.rgSupplierType.setOnCheckedChangeListener((group, checkedId) -> updateSaveButtonState());
+
         binding.btnSaveSupplier.setOnClickListener(v -> addSupplier());
+        updateSaveButtonState();
     }
 
     @Override
@@ -56,19 +75,17 @@ public class AddSupplierFragment extends Fragment {
         binding = null;
     }
 
+    private void updateSaveButtonState() {
+        String name = Objects.requireNonNull(binding.etSupplierName.getText()).toString().trim();
+        int typeId = binding.rgSupplierType.getCheckedRadioButtonId();
+        boolean isReady = name.length() >= 3 && typeId != -1;
+
+        binding.btnSaveSupplier.setEnabled(isReady);
+    }
+
     private void addSupplier() {
         String supplierName = Objects.requireNonNull(binding.etSupplierName.getText()).toString().trim();
         int selectedTypeId = binding.rgSupplierType.getCheckedRadioButtonId();
-
-        if (supplierName.isEmpty()) {
-            binding.etSupplierName.setError("Supplier name is required");
-            return;
-        }
-
-        if (selectedTypeId == -1) {
-            Toast.makeText(requireContext(), "Please select a supplier type", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         int type = 1;
         if (selectedTypeId == R.id.rbType2) {

@@ -1,10 +1,13 @@
 package com.example.supplierassignment;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -105,45 +108,80 @@ public class SendToServerFragment extends Fragment {
 
         final TextInputLayout tilIP = new TextInputLayout(requireContext());
         tilIP.setHint("Server IP Address");
+        tilIP.setPlaceholderText("e.g 10.0.2.2"); // Default for emulator
         final TextInputEditText etIP = new TextInputEditText(requireContext());
-        etIP.setText("10.0.2.2"); // Default for emulator
         tilIP.addView(etIP);
         layout.addView(tilIP);
 
         final TextInputLayout tilPort = new TextInputLayout(requireContext());
         tilPort.setHint("Port Number");
+        tilPort.setPlaceholderText("e.g. 8080");
         tilPort.setPadding(0, padding, 0, 0);
         final TextInputEditText etPort = new TextInputEditText(requireContext());
-        etPort.setHint("e.g. 8080");
         etPort.setInputType(InputType.TYPE_CLASS_NUMBER);
         tilPort.addView(etPort);
         layout.addView(tilPort);
 
-        new MaterialAlertDialogBuilder(requireContext())
+        androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Connect to Server")
                 .setView(layout)
-                .setPositiveButton("Connect", (dialog, which) -> {
+                .setPositiveButton("Connect", (d, which) -> {
                     String ip = Objects.requireNonNull(etIP.getText()).toString();
-                    if (ip.isEmpty()) {
-                        Toast.makeText(requireContext(), "IP address cannot be empty!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    String portStr = Objects.requireNonNull(etPort.getText()).toString();
-                    if(portStr.isEmpty()){
-                        Toast.makeText(requireContext(), "Port cannot be empty!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    try {
-                        int port = Integer.parseInt(portStr);
-                        networkViewModel.sendDataToServer(ip, port);
-                    } catch (NumberFormatException e) {
-                        Toast.makeText(requireContext(), "Invalid port number", Toast.LENGTH_SHORT).show();
-                    }
+                    int port = Integer.parseInt(Objects.requireNonNull(etPort.getText()).toString());
+                    networkViewModel.sendDataToServer(ip, port);
                 })
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.cancel())
-                .show();
+                .setNegativeButton("Cancel", null)
+                .create();
+
+        dialog.show();
+
+        Button connectButton = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE);
+
+        TextWatcher watcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged (CharSequence s, int before, int start, int count) {
+                validateInputs(tilIP, tilPort, connectButton);
+            }
+            @Override public void afterTextChanged (Editable s) {}
+        };
+
+        etIP.addTextChangedListener(watcher);
+        etPort.addTextChangedListener(watcher);
+
+        // Initial validation check
+        validateInputs(tilIP, tilPort, connectButton);
+    }
+
+    private void validateInputs(TextInputLayout tilIP, TextInputLayout tilPort, Button connectButton) {
+        String ip = Objects.requireNonNull(tilIP.getEditText()).getText().toString();
+        String portStr = Objects.requireNonNull(tilPort.getEditText()).getText().toString();
+        String ipPattern = "^([0-9]{1,3}\\.){3}[0-9]{1,3}$";
+
+        boolean isIPValid = ip.matches(ipPattern);
+        boolean isPortValid = false;
+
+        try {
+            if (!portStr.isEmpty()) {
+                int port = Integer.parseInt(portStr);
+                isPortValid = (port >= 1) && (port <= 65535);
+            }
+        } catch (NumberFormatException ignored) {}
+
+        // enable button only if both are valid
+        connectButton.setEnabled(isIPValid && isPortValid);
+
+        // show live error hints
+        if (!ip.isEmpty() && !isIPValid) {
+            tilIP.setError("Invalid IP format");
+        } else {
+            tilIP.setError(null);
+        }
+
+        if (!portStr.isEmpty() && !isPortValid) {
+            tilPort.setError("Invalid port (1-65535)");
+        } else {
+            tilPort.setError(null);
+        }
     }
 
 
