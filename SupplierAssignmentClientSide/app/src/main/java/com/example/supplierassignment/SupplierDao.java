@@ -8,10 +8,17 @@ import androidx.room.Update;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
+
 @Dao
 public interface SupplierDao {
     @Query("SELECT * FROM Suppliers")
     List<Supplier> getAllSuppliers();
+
+    @Query("SELECT * FROM Suppliers")
+    Single<List<Supplier>> getAllSuppliersSingle();
 
     @Query("SELECT * FROM Suppliers WHERE info LIKE :query")
     List<Supplier> searchSuppliers(String query);
@@ -20,33 +27,36 @@ public interface SupplierDao {
     Supplier getSupplierById(int id);
 
     @Insert
-    void insertSupplier(Supplier supplier);
+    Completable insertSupplier(Supplier supplier);
 
     @Update
-    void updateSupplier(Supplier supplier);
+    Completable updateSupplier(Supplier supplier);
 
     @Query("DELETE FROM Suppliers WHERE id = :id")
-    void deleteById(int id);
+    Completable deleteById(int id);
 
     @Insert
-    void insertAssignment(Assignment assignment);
+    Completable insertAssignment(Assignment assignment);
 
     @Query("SELECT * FROM SupplierAssignments")
     List<Assignment> getAllAssignments();
 
+    @Query("SELECT * FROM SupplierAssignments")
+    Single<List<Assignment>> getAllAssignmentsSingle();
+
     @Query("DELETE FROM SupplierAssignments")
-    void deleteAllAssignments();
+    Completable deleteAllAssignments();
 
     @Query("DELETE FROM Suppliers")
-    void deleteAllSuppliers();
+    Completable deleteAllSuppliers();
 
     @Query("DELETE FROM sqlite_sequence WHERE name='SupplierAssignments' OR name='Suppliers'")
-    void resetSequences();
+    void resetSequences(); // SQLite sequence reset might be tricky with Completable if not returned, but usually it works if it returns void/Completable.
 
     @Query("SELECT * FROM Suppliers")
-    LiveData<List<Supplier>> getAllSuppliersLiveData();
+    Flowable<List<Supplier>> getAllSuppliersFlowable();
     @Query("SELECT * FROM Suppliers WHERE info LIKE :query")
-    LiveData<List<Supplier>> searchSuppliersLiveData(String query);
+    Flowable<List<Supplier>> searchSuppliersFlowable(String query);
     @Query("SELECT * FROM Suppliers WHERE id = :id")
-    LiveData<Supplier> getSupplierByIdLiveData(int id);
+    Flowable<Supplier> getSupplierByIdFlowable(int id);
 }

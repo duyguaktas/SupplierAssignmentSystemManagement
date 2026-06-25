@@ -36,6 +36,7 @@ public class EditSupplierDetailFragment extends Fragment {
     private FragmentEditSupplierDetailBinding binding;
     private SupplierViewModel supplierViewModel;
     private int id;
+    private int selectedTypeIndex = -1;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,6 +54,26 @@ public class EditSupplierDetailFragment extends Fragment {
         NavigationUI.setupWithNavController(binding.toolbar, navController);
 
         supplierViewModel = new ViewModelProvider(requireParentFragment()).get(SupplierViewModel.class);
+
+        supplierViewModel.toastMessage.observe(getViewLifecycleOwner(), message -> {
+            if (message != null) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                supplierViewModel.clearToastMessage();
+            }
+        });
+
+        supplierViewModel.navigationEvent.observe(getViewLifecycleOwner(), shouldNavigate -> {
+            if (Boolean.TRUE.equals(shouldNavigate)) {
+                navController.navigateUp();
+                supplierViewModel.clearNavigationEvent();
+            }
+        });
+
+        supplierViewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            binding.btnUpdateSupplier.setEnabled(!loading);
+            binding.btnDeleteSupplier.setEnabled(!loading);
+        });
+
         setupTypeDropdown();
         
         ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
@@ -88,31 +109,34 @@ public class EditSupplierDetailFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_1, SUPPLIER_TYPES);
         binding.actvSupplierType.setAdapter(adapter);
+        binding.actvSupplierType.setOnItemClickListener((parent, view, position, id) -> {
+            selectedTypeIndex = position;
+        });
     }
 
     private void deleteSupplier() {
         supplierViewModel.deleteSupplier(id);
-        Toast.makeText(requireContext(), "Supplier deleted", Toast.LENGTH_SHORT).show();
-        Navigation.findNavController(requireView()).navigateUp();
     }
 
     private void loadSupplier() {
-        Supplier supplier = supplierViewModel.getSupplierById(id);
-        if (supplier != null) {
-            binding.etSupplierName.setText(supplier.getInfo());
-            binding.etReservedDays.setText(supplier.getReservedDays());
-            
-            // Set the correct dropdown value based on integer type
-            int typeIndex = supplier.getType() - 1;
-            if (typeIndex >= 0 && typeIndex < SUPPLIER_TYPES.length) {
-                binding.actvSupplierType.setText(SUPPLIER_TYPES[typeIndex], false);
+        supplierViewModel.getSupplierByIdLiveData(id).observe(getViewLifecycleOwner(), supplier -> {
+            if (supplier != null) {
+                binding.etSupplierName.setText(supplier.getInfo());
+                binding.etReservedDays.setText(supplier.getReservedDays());
+
+                // Set the correct dropdown value based on integer type
+                int typeValue = supplier.getType().getValue();
+                int typeIndex = typeValue - 1;
+                if (typeIndex >= 0 && typeIndex < SUPPLIER_TYPES.length) {
+                    binding.actvSupplierType.setText(SUPPLIER_TYPES[typeIndex], false);
+                    selectedTypeIndex = typeIndex;
+                }
             }
-        }
+        });
     }
 
     private void saveSupplier() {
         String name = Objects.requireNonNull(binding.etSupplierName.getText()).toString().trim();
-        String selectedTypeText = binding.actvSupplierType.getText().toString();
         String reservedStr = Objects.requireNonNull(binding.etReservedDays.getText()).toString().trim();
 
         if (name.isEmpty()) {
@@ -120,29 +144,14 @@ public class EditSupplierDetailFragment extends Fragment {
             return;
         }
 
-        int type = 0;
-        for (int i = 0; i < SUPPLIER_TYPES.length; i++) {
-            if (SUPPLIER_TYPES[i].equals(selectedTypeText)) {
-                type = i + 1;
-                break;
-            }
-        }
-
-        if (type == 0) {
+        if (selectedTypeIndex == -1) {
             Toast.makeText(requireContext(), "Please select a supplier type", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        try {
-            Supplier updatedSupplier = new Supplier(id, name, type, reservedStr);
-            supplierViewModel.updateSupplier(updatedSupplier);
-            
-            Toast.makeText(requireContext(), "Supplier updated successfully", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(requireView()).navigateUp();
-        } catch (IllegalArgumentException e) {
-            Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(requireContext(), "Update failed", Toast.LENGTH_SHORT).show();
-        }
+        SupplierType type = SupplierType.fromInt(selectedTypeIndex + 1);
+
+        Supplier updatedSupplier = new Supplier(id, name, type, reservedStr);
+        supplierViewModel.updateSupplier(updatedSupplier);
     }
 }

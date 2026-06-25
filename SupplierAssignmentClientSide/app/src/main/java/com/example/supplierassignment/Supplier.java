@@ -23,7 +23,7 @@ public class Supplier {
     
     @ColumnInfo(name = "type")
     @SerializedName("type")
-    private int type;
+    private SupplierType type;
     
     @ColumnInfo(name = "reservedDays")
     private String reservedDays;
@@ -32,7 +32,7 @@ public class Supplier {
     @SerializedName("reservedDays")
     private transient List<Integer> reservedDaysList;
 
-    public Supplier(int id, String info, int type, String reservedDays) {
+    public Supplier(int id, String info, SupplierType type, String reservedDays) {
         setId(id);
         setInfo(info);
         setType(type);
@@ -55,14 +55,12 @@ public class Supplier {
         this.info = info;
     }
 
-    public int getType() {
+    public SupplierType getType() {
         return type;
     }
 
-    public void setType(int type) {
-        if(type<=3 && type>= 1) {
-            this.type = type;
-        } else throw new IllegalArgumentException("Supplier type must be between 1 and 3");
+    public void setType(SupplierType type) {
+        this.type = type;
     }
 
     public String getReservedDays() {

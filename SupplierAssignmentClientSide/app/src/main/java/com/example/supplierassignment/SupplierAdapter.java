@@ -27,7 +27,7 @@ public class SupplierAdapter extends ListAdapter<Supplier, SupplierAdapter.Suppl
             @Override
             public boolean areContentsTheSame(@NonNull Supplier oldItem, @NonNull Supplier newItem) {
                 return oldItem.getInfo().equals(newItem.getInfo()) &&
-                        oldItem.getType() == newItem.getType() &&
+                        oldItem.getType().equals(newItem.getType()) &&
                         oldItem.getReservedDays().equals(newItem.getReservedDays());
             }
         });
@@ -60,8 +60,12 @@ public class SupplierAdapter extends ListAdapter<Supplier, SupplierAdapter.Suppl
 
         public void bind(Supplier supplier, OnItemClickListener listener) {
             tvName.setText(supplier.getInfo());
-            tvType.setText(String.valueOf(supplier.getType()));
-            tvReserved.setText(supplier.getReservedDays());
+
+            tvType.setText(supplier.getType().getDescription());
+
+            String days = supplier.getReservedDays();
+            tvReserved.setText(days.isEmpty() ? "" : days);
+
             itemView.setOnClickListener(v -> listener.onItemClick(supplier));
         }
     }

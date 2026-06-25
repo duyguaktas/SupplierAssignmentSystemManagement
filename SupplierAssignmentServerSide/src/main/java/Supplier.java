@@ -3,11 +3,11 @@ public class Supplier {
 
     private int id;
     private String info;
-    private int type;
+    private SupplierType type;
     private String reservedDays;
     private int workCount = 0;
 
-    public Supplier(int id, String supplierInfo, int supplierType, String lastReservedDays) {
+    public Supplier(int id, String supplierInfo, SupplierType supplierType, String lastReservedDays) {
         setId(id);
         setInfo(supplierInfo);
         setType(supplierType);
@@ -22,12 +22,11 @@ public class Supplier {
 
     public void setInfo(String supplierInfo) {this.info = supplierInfo;}
 
-    public int getType() {return type;}
+    public SupplierType getType() {return type;}
 
-    public void setType(int supplierType) {
-        if(supplierType <=3 && supplierType >= 1) {
-            this.type = supplierType;
-        } else throw new IllegalArgumentException("Supplier type must be between 1 and 3");}
+    public void setType(SupplierType supplierType) {
+        this.type = supplierType;
+    }
 
     public String getReservedDays() {
         return reservedDays;

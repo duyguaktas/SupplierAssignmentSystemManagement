@@ -49,6 +49,24 @@ public class AddSupplierFragment extends Fragment {
         NavController navController = Navigation.findNavController(view);
         NavigationUI.setupWithNavController(binding.toolbar, navController);
 
+        supplierViewModel.toastMessage.observe(getViewLifecycleOwner(), message -> {
+            if (message != null) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                supplierViewModel.clearToastMessage();
+            }
+        });
+
+        supplierViewModel.navigationEvent.observe(getViewLifecycleOwner(), shouldNavigate -> {
+            if (Boolean.TRUE.equals(shouldNavigate)) {
+                navController.navigateUp();
+                supplierViewModel.clearNavigationEvent();
+            }
+        });
+
+        supplierViewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
+            binding.btnSaveSupplier.setEnabled(!loading && (Objects.requireNonNull(binding.etSupplierName.getText()).length() >= 3) && binding.rgSupplierType.getCheckedRadioButtonId() != -1);
+        });
+
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {}
@@ -87,19 +105,14 @@ public class AddSupplierFragment extends Fragment {
         String supplierName = Objects.requireNonNull(binding.etSupplierName.getText()).toString().trim();
         int selectedTypeId = binding.rgSupplierType.getCheckedRadioButtonId();
 
-        int type = 1;
+        int typeValue = 1;
         if (selectedTypeId == R.id.rbType2) {
-            type = 2;
+            typeValue = 2;
         } else if (selectedTypeId == R.id.rbType3) {
-            type = 3;
+            typeValue = 3;
         }
-
-        try {
-            supplierViewModel.addSupplier(supplierName, type);
-            Toast.makeText(requireContext(), "Supplier added successfully", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(requireView()).navigateUp();
-        } catch (Exception e) {
-            Toast.makeText(requireContext(), "Failed to add supplier", Toast.LENGTH_SHORT).show();
-        }
+        
+        // toast and navigation are handled by observers
+        supplierViewModel.addSupplier(supplierName, typeValue);
     }
 }

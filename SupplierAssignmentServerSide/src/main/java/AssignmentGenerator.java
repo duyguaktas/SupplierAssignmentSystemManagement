@@ -19,15 +19,19 @@ public class AssignmentGenerator {
         type3Suppliers.clear();
 
         for (Supplier supplier : suppliers) {
-            int typeNo = supplier.getType();
-            if (typeNo == 1) {
-                type1Suppliers.add(supplier);
-            } else if (typeNo == 2) {
-                type2Suppliers.add(supplier);
-            } else if (typeNo == 3) {
-                type3Suppliers.add(supplier);
-            } else {
-                throw new IllegalArgumentException("Invalid supplier type: " + typeNo);
+            SupplierType type = supplier.getType();
+
+            switch (type) {
+                case CONTRACT_ONLY:
+                    type1Suppliers.add(supplier);
+                    break;
+                case STOCK_ONLY:
+                    type2Suppliers.add(supplier);
+                    break;
+                case BOTH:
+                    type3Suppliers.add(supplier);
+                    break;
+                // no default needed because all Enum types are covered
             }
         }
     }

@@ -76,6 +76,12 @@ public class SendToServerFragment extends Fragment {
             binding.btnSendToServer.setText(loading ? "Connecting..." : "Connect & Send");
         });
 
+        networkViewModel.statusMessage.observe(getViewLifecycleOwner(), message -> {
+            if (message != null) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         supplierViewModel.setSearchQuery("");
         
         NavController navController = Navigation.findNavController(view);
