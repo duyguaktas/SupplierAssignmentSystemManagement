@@ -69,6 +69,14 @@ public class EditSupplierDetailFragment extends Fragment {
             }
         });
 
+        supplierViewModel.validationState.observe(getViewLifecycleOwner(), state -> {
+            binding.tilSupplierName.setError(state.nameError);
+            binding.tilReservedDays.setError(state.reservedDaysError);
+            if (state.typeError != null) {
+                Toast.makeText(requireContext(), state.typeError, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         supplierViewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
             binding.btnUpdateSupplier.setEnabled(!loading);
             binding.btnDeleteSupplier.setEnabled(!loading);
@@ -139,19 +147,6 @@ public class EditSupplierDetailFragment extends Fragment {
         String name = Objects.requireNonNull(binding.etSupplierName.getText()).toString().trim();
         String reservedStr = Objects.requireNonNull(binding.etReservedDays.getText()).toString().trim();
 
-        if (name.isEmpty()) {
-            binding.etSupplierName.setError("Name is required");
-            return;
-        }
-
-        if (selectedTypeIndex == -1) {
-            Toast.makeText(requireContext(), "Please select a supplier type", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        SupplierType type = SupplierType.fromInt(selectedTypeIndex + 1);
-
-        Supplier updatedSupplier = new Supplier(id, name, type, reservedStr);
-        supplierViewModel.updateSupplier(updatedSupplier);
+        supplierViewModel.validateAndSave(id, name, selectedTypeIndex, reservedStr, true);
     }
 }

@@ -63,6 +63,14 @@ public class AddSupplierFragment extends Fragment {
             }
         });
 
+        supplierViewModel.validationState.observe(getViewLifecycleOwner(), state -> {
+            binding.tilSupplierName.setError(state.nameError);
+            // Since it's a RadioGroup, we just show a toast for typeError if needed
+            if (state.typeError != null) {
+                Toast.makeText(requireContext(), state.typeError, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         supplierViewModel.isLoading.observe(getViewLifecycleOwner(), loading -> {
             binding.btnSaveSupplier.setEnabled(!loading && (Objects.requireNonNull(binding.etSupplierName.getText()).length() >= 3) && binding.rgSupplierType.getCheckedRadioButtonId() != -1);
         });
@@ -105,14 +113,15 @@ public class AddSupplierFragment extends Fragment {
         String supplierName = Objects.requireNonNull(binding.etSupplierName.getText()).toString().trim();
         int selectedTypeId = binding.rgSupplierType.getCheckedRadioButtonId();
 
-        int typeValue = 1;
-        if (selectedTypeId == R.id.rbType2) {
-            typeValue = 2;
+        int typeIndex = -1;
+        if (selectedTypeId == R.id.rbType1) {
+            typeIndex = 0;
+        } else if (selectedTypeId == R.id.rbType2) {
+            typeIndex = 1;
         } else if (selectedTypeId == R.id.rbType3) {
-            typeValue = 3;
+            typeIndex = 2;
         }
         
-        // toast and navigation are handled by observers
-        supplierViewModel.addSupplier(supplierName, typeValue);
+        supplierViewModel.validateAndSave(0, supplierName, typeIndex, "", false);
     }
 }

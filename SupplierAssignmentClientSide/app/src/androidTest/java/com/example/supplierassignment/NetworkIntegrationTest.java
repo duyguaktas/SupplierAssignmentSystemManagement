@@ -81,11 +81,11 @@ public class NetworkIntegrationTest {
 
     @Test
     public void testSyncWithServerAndDatabaseWrite() throws InterruptedException {
-        repository.resetDatabase();
+        repository.resetDatabase().blockingAwait();
         Thread.sleep(200);
 
         // add the supplier we expect the server to update
-        repository.addSupplier("Supplier A", 1);
+        repository.addSupplier("Supplier A", 1).blockingAwait();
         Thread.sleep(500);
 
         // navigate to send screen
@@ -113,6 +113,7 @@ public class NetworkIntegrationTest {
         // verify supplier update
         List<Supplier> suppliers = repository.getAllSuppliers("Supplier A");
         assertFalse("Supplier A should exist", suppliers.isEmpty());
+        // Verify the formatted string matches what we expect from the sync logic
         assertEquals("Supplier reserved days should be updated via sync", "1", suppliers.get(0).getReservedDays());
     }
 }

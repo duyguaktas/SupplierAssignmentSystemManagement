@@ -31,7 +31,7 @@ public class ExampleInstrumentedTest {
 
     @After
     public void resetData(){
-        repository.resetDatabase();
+        repository.resetDatabase().blockingAwait();
     }
 
     @Test

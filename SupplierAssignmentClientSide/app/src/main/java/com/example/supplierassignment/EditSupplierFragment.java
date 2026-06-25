@@ -53,12 +53,16 @@ public class EditSupplierFragment extends Fragment {
         setupRecycleView();
 
         supplierViewModel = new ViewModelProvider(requireParentFragment()).get(SupplierViewModel.class);
-        supplierViewModel.setSearchQuery("");
-        supplierViewModel.getSuppliers().observe(getViewLifecycleOwner(), suppliers -> adapter.submitList(suppliers));
+        supplierViewModel.getSuppliers().observe(getViewLifecycleOwner(), suppliers -> {
+            adapter.submitList(suppliers);
+            binding.tvNoResults.setVisibility(suppliers.isEmpty() ? View.VISIBLE : View.GONE);
+            // Ensure the list is visible
+            binding.rvSuppliers.setVisibility(View.VISIBLE);
+        });
+
         String savedQuery = supplierViewModel.getSearchQueryValue();
         if (savedQuery != null && !savedQuery.isEmpty()) {
             binding.etSearchBar.setText(savedQuery);
-            binding.rvSuppliers.setVisibility(View.VISIBLE);
         }
     }
 
